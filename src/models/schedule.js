@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
          */
     }
     Schedule.init({
-        currentNumber: DataTypes.INTERGER,
-        maxNumber: DataTypes.INTERGER,
+        currentNumber: DataTypes.INTEGER,
+        maxNumber: DataTypes.INTEGER,
         date: DataTypes.DATE,
         timeType: DataTypes.STRING,
-        doctorId: DataTypes.INTERGER,
+        doctorId: DataTypes.INTEGER,
     }, {
         sequelize,
         modelName: 'Schedule',
