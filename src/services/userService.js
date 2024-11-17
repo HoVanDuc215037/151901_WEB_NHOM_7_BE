@@ -136,8 +136,130 @@ let createNewUserInReact = (data) => {
     })
 }
 
+let getAllUsersForReact = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let users = '';
+            if (userId === 'ALL') {
+                users = db.User.findAll({
+                    attributes: {
+                        exclude: ['password']
+                    }
+                })
+            }
+            if (userId && userId !== 'ALL') {
+                users = await db.User.findOne({
+                    where: { id: userId }, attributes: {
+                        exclude: ['password']
+                    }
+                })
+            }
+
+            resolve(users);
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let editUserInReact = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.id || !data.roleId || !data.positionId || !data.gender) {
+                resolve({
+                    errCode: 2,
+                    errMessage: 'Missing parameters!',
+                })
+            }
+            let user = await db.User.findOne({
+                where: { id: data.id },
+                raw: false
+            })
+            if (user) {
+                user.firstName = data.firstName;
+                user.lastName = data.lastName;
+                user.address = data.address;
+                user.phoneNumber = data.phoneNumber;
+                user.gender = data.gender;
+                user.roleId = data.roleId;
+                user.positionId = data.positionId;
+                if (data.image) {
+                    user.image = data.image;
+                }
+                await user.save();
+                resolve({
+                    errCode: 0,
+                    message: 'User updated!',
+                })
+            } else {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'User is not found!'
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let deleteUserInReact = (userIdFromReact) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: userIdFromReact },
+                raw: false,
+            });
+            console.log(user);
+            if (!user) {
+                resolve({
+                    errCode: 2,
+                    errMessage: 'User is not exist!'
+                })
+            } else {
+                await user.destroy();
+                resolve({
+                    errCode: 0,
+                    message: 'User has been deleted successfully'
+                })
+            }
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+let getAllCodesDataService = (typeInput) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!typeInput) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters!'
+                });
+            } else {
+                let res = {};
+                let allCodesData = await db.Allcode.findAll({
+                    where: { type: typeInput },
+                });
+                res.errCode = 0;
+                res.data = allCodesData;
+                resolve(res);
+            }
+
+
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     handleUserLogin: handleUserLogin,
     checkUserEmail: checkUserEmail,
-    createNewUserInReact: createNewUserInReact
+    createNewUserInReact: createNewUserInReact,
+    getAllUsersForReact: getAllUsersForReact,
+    editUserInReact: editUserInReact,
+    deleteUserInReact: deleteUserInReact,
+    getAllCodesDataService: getAllCodesDataService
 }
