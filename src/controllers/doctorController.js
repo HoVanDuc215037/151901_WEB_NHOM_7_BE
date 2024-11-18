@@ -1,4 +1,3 @@
-import { response } from "express";
 import doctorService from "../services/doctorService"
 
 let getEliteDoctorForHomepage = async (req,res) => {
@@ -29,7 +28,21 @@ let getAllDoctorsForDoctorArticlePage = async(req,res) => {
     }
 }
 
+let saveInforAndArticleOfADoctor = async(req,res) => {
+    try {
+        let response = await doctorService.saveInforAndArticleOfADoctor(req.body);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode : -1,
+            message: 'Save doctor infor and article error!'
+        })
+    }
+}
+
 module.exports = {
     getEliteDoctorForHomePage: getEliteDoctorForHomepage,
-    getAllDoctorsForDoctorArticlePage : getAllDoctorsForDoctorArticlePage
+    getAllDoctorsForDoctorArticlePage : getAllDoctorsForDoctorArticlePage,
+    saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor
 }
