@@ -2,6 +2,7 @@ import express from "express";
 import userController from "../controllers/userController";
 import doctorController from "../controllers/doctorController";
 import medicalFacilityController from '../controllers/medicalFacilityController';
+import specialtyController from '../controllers/specialtyController'
 
 let router = express.Router();
 
@@ -27,6 +28,14 @@ let initWebRoutes = (app) => {
     router.get('/api/get-elite-doctor-for-homepage',doctorController.getEliteDoctorForHomePage);
     //lấy ra tất cả bác sĩ để cho vào Select trong trang doctorArticle
     router.get('/api/get-all-doctors-for-doctor-article-page', doctorController.getAllDoctorsForDoctorArticlePage);
+    //lưu bài báo của một bác sĩ
+    router.post('/api/save-infor-and-article-of-a-doctor', doctorController.saveInforAndArticleOfADoctor);
+
+
+    //tạo chuyên khoa mới
+    router.post('/api/create-new-specialty', specialtyController.createSpecialty);
+    //lấy các chuyên khoa cho trang home
+    router.get('/api/get-specialty-for-homepage', specialtyController.getSpecialtyForHomePage);
 
     return app.use("/", router);
 }
