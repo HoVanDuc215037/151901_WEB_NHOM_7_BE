@@ -30,7 +30,10 @@ let initWebRoutes = (app) => {
     router.get('/api/get-all-doctors-for-doctor-article-page', doctorController.getAllDoctorsForDoctorArticlePage);
     //lưu bài báo của một bác sĩ
     router.post('/api/save-infor-and-article-of-a-doctor', doctorController.saveInforAndArticleOfADoctor);
-
+    //lấy thông tin map từ 2 bảng user và markdown với key=doctorId để hiển thị thông tin bác sĩ
+    router.get('/api/get-a-particular-doctor-infor-for-his-or-her-page', doctorController.getParticularInforForDoctorPage);
+    //lấy thêm thông tin bác sĩ như địa chỉ phòng khám, giá khám, phương thức thanh toán
+    router.get('/api/get-extra-infor-doctor-by-id', doctorController.getExtraInforDoctorByID);
 
     //tạo chuyên khoa mới
     router.post('/api/create-new-specialty', specialtyController.createSpecialty);

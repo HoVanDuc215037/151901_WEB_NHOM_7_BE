@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
+        static associate(models) {
+            ComplexMedicalFacility.hasMany(models.Doctor_specialty_medicalFacility, { foreignKey: 'medicalFacilityId', as: 'medicalFacilityDoctorAndSpecialty' })
+        }
     }
     ComplexMedicalFacility.init({
         name: DataTypes.STRING,

@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
+        static associate(models) {
+            Specialty.hasMany(models.Doctor_infor, { foreignKey: 'specialtyId', as: 'belongToSpecialty' })
+        }
     }
     Specialty.init({
         name: DataTypes.STRING,
