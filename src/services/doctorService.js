@@ -179,8 +179,116 @@ let saveInforAndArticleOfADoctor = (inputData) => {
     })
 }
 
+let getParticularInforForDoctorPage = (inputDoctorId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputDoctorId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing required parameter(s)!",
+                })
+            } else {
+                let data = await db.User.findOne({
+                    where: {
+                        id: inputDoctorId
+                    },
+                    attributes: {
+                        exclude: ['password'],
+                    },
+                    include: [
+                        { model: db.ArticleMarkdown, attributes: ['htmlContent', 'markdownContent', 'description'] },
+                        { model: db.Allcode, as: 'positionData', attributes: ['value_Eng', 'value_Vie'] },
+
+                        {
+                            model: db.Doctor_infor,
+                            attributes: {
+                                exclude: ['id', 'doctorId']
+                            },
+                            include: [
+                                { model: db.Allcode, as: 'priceTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                                { model: db.Allcode, as: 'provinceTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                                { model: db.Allcode, as: 'paymentTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                                { model: db.Specialty, as: 'belongToSpecialty', attributes: ['name'] }
+                            ]
+                        },
+                        {
+                            model: db.Doctor_specialty_medicalFacility,
+                            attributes: {
+                                exclude: ['id', 'createdAt', 'updatedAt']
+                            },
+                            include: [
+                                {
+                                    model: db.ComplexMedicalFacility,
+                                    as: 'medicalFacilityDoctorAndSpecialty',
+                                    attributes: ['id', 'name']
+                                }
+                            ]
+                        }
+
+                    ],
+                    raw: false,
+                    nest: true,
+                })
+
+                if (data && data.image) {
+                    data.image = Buffer.from(data.image, 'base64').toString('binary');
+                }
+
+                if (!data) data = {};
+
+                resolve({
+                    errCode: 0,
+                    data: data,
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+
+let getExtraInforDoctorByID = (inputId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing input parameter: doctorId',
+                })
+            } else {
+                let data = await db.Doctor_infor.findOne({
+                    where: { doctorId: inputId },
+                    attributes: {
+                        exclude: ['id', 'doctorId']
+                    },
+                    include: [
+                        { model: db.Allcode, as: 'priceTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                        { model: db.Allcode, as: 'provinceTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                        { model: db.Allcode, as: 'paymentTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                    ],
+                    raw: false,
+                    nest: true
+                })
+                if (!data) {
+                    data = {};
+                }
+                resolve({
+                    errCode: 0,
+                    data: data,
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+
+}
+
 module.exports = {
     getEliteDoctorForHomePage : getEliteDoctorForHomePage, 
     getAllDoctorsForDoctorArticlePage: getAllDoctorsForDoctorArticlePage,
-    saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor
+    saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor,
+    getParticularInforForDoctorPage: getParticularInforForDoctorPage,
+    getExtraInforDoctorByID : getExtraInforDoctorByID
 }

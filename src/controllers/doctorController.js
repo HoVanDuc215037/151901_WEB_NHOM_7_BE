@@ -41,8 +41,36 @@ let saveInforAndArticleOfADoctor = async(req,res) => {
     }
 }
 
+let getParticularInforForDoctorPage = async(req,res) => {
+    try {
+        let response = await doctorService.getParticularInforForDoctorPage(req.query.id);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode : -1,
+            message: 'Get particular doctor infor error from server!'
+        })
+    }
+}
+
+let getExtraInforDoctorByID = async (req, res) => {
+    try {
+        let response = await doctorService.getExtraInforDoctorByID(req.query.doctorId);
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Get extra infor doctor error from server!'
+        })
+    }
+}
+
 module.exports = {
     getEliteDoctorForHomePage: getEliteDoctorForHomepage,
     getAllDoctorsForDoctorArticlePage : getAllDoctorsForDoctorArticlePage,
-    saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor
+    saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor,
+    getParticularInforForDoctorPage : getParticularInforForDoctorPage,
+    getExtraInforDoctorByID : getExtraInforDoctorByID
 }
