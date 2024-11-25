@@ -254,6 +254,127 @@ let getAllCodesDataService = (typeInput) => {
     })
 }
 
+let getAllRelativeInforsOfCurrentSystemUserService = (currentUserEmail) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!currentUserEmail) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing input parameter: current user email!',
+                });
+            } else {
+                let res = {};
+                let userInUserTable = await db.User.findOne({
+                    where: { email: currentUserEmail },
+                    attributes: {
+                        exclude: ['password', 'id', 'createdAt', 'updatedAt']
+                    },
+                    include: [
+                        {
+                            model: db.Allcode, as: 'roleData',
+                            attributes: ['value_Eng', 'value_Vie']
+                        },
+                        {
+                            model: db.Allcode, as: 'positionData',
+                            attributes: ['value_Eng', 'value_Vie']
+                        },
+                        {
+                            model: db.Allcode, as: 'genderData',
+                            attributes: ['value_Eng', 'value_Vie']
+                        },
+                        {
+                            model: db.Doctor_infor,
+                            attributes: {
+                                exclude: ['id', 'doctorId']
+                            },
+                            include: [
+                                {
+                                    model: db.Specialty, as: 'belongToSpecialty',
+                                    attributes: ['name']
+                                },
+                            ]
+                        },
+                    ]
+                });
+
+                if (userInUserTable) {
+                    // Format lại các trường date và patientBirthday
+                    if (userInUserTable.doctorHasAppointmentWithPatients) {
+                        userInUserTable.doctorHasAppointmentWithPatients.forEach(appointment => {
+                            appointment.date = moment(appointment.date).format('YYYY-MM-DD');
+                            appointment.patientBirthday = moment(appointment.patientBirthday).format('YYYY-MM-DD');
+                        });
+                    }
+
+                    if (userInUserTable.patientHasAppointmentWithDoctors) {
+                        userInUserTable.patientHasAppointmentWithDoctors.forEach(appointment => {
+                            appointment.date = moment(appointment.date).format('YYYY-MM-DD');
+                            appointment.patientBirthday = moment(appointment.patientBirthday).format('YYYY-MM-DD');
+                        });
+                    }
+                }
+
+                res.errCode = 0;
+                res.errMessage = 'Get current user informations successfully!';
+                res.data = userInUserTable;
+
+                resolve(res);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+let getAllRelativeBookingsOfCurrentSystemUserService = (currentUserEmail) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!currentUserEmail) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing input parameter: current user email!',
+                });
+            } else {
+                let res = {};
+                let allBookingsOfCurrentUser = await db.User.findOne({
+                    where: { email: currentUserEmail },
+                    attributes: {
+                        exclude: ['password', 'id', 'createdAt', 'updatedAt', 'firstName', 'lastName', 'address', 'gender', 'phoneNumber', 'image', 'roleId', 'positionId']
+                    },
+                    include: [
+                        {
+                            model: db.Booking, as: 'doctorHasAppointmentWithPatients',
+                            attributes: ['id', 'statusId', 'timeType', 'doctorId', 'patientId', 'date', 'patientPhoneNumber', 'patientAddress', 'patientBirthday', 'patientGender'],
+                            include: [
+                                {
+                                    model: db.Allcode, as: 'appointmentTimeTypeData',
+                                    attributes: ['value_Vie', 'value_Eng']
+                                },
+                            ]
+                        },
+                        {
+                            model: db.Booking, as: 'patientHasAppointmentWithDoctors',
+                            attributes: ['id', 'statusId', 'timeType', 'doctorId', 'patientId', 'date', 'patientPhoneNumber', 'patientAddress', 'patientBirthday', 'patientGender'],
+                            include: [
+                                {
+                                    model: db.Allcode, as: 'appointmentTimeTypeData',
+                                    attributes: ['value_Vie', 'value_Eng']
+                                },
+                            ]
+                        },
+                    ]
+                });
+                res.errCode = 0;
+                res.errMessage = 'Get current user bookings successfully!';
+                res.data = allBookingsOfCurrentUser;
+                resolve(res);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
 module.exports = {
     handleUserLogin: handleUserLogin,
     checkUserEmail: checkUserEmail,
@@ -261,5 +382,7 @@ module.exports = {
     getAllUsersForReact: getAllUsersForReact,
     editUserInReact: editUserInReact,
     deleteUserInReact: deleteUserInReact,
-    getAllCodesDataService: getAllCodesDataService
+    getAllCodesDataService: getAllCodesDataService,
+    getAllRelativeInforsOfCurrentSystemUserService: getAllRelativeInforsOfCurrentSystemUserService,
+    getAllRelativeBookingsOfCurrentSystemUserService: getAllRelativeBookingsOfCurrentSystemUserService
 }
