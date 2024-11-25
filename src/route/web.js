@@ -40,6 +40,8 @@ let initWebRoutes = (app) => {
     router.get('/api/get-a-particular-doctor-infor-for-his-or-her-page', doctorController.getParticularInforForDoctorPage);
     //lấy thêm thông tin bác sĩ như địa chỉ phòng khám, giá khám, phương thức thanh toán
     router.get('/api/get-extra-infor-doctor-by-id', doctorController.getExtraInforDoctorByID);
+    //tạo một schedule cho 1 bac sĩ, một schedule có nhiều timeframe
+    router.post('/api/bulk-create-timeframes-for-doctor-appointment-schedule', doctorController.createTimeframesForDoctorSchedule);
 
     //tạo chuyên khoa mới
     router.post('/api/create-new-specialty', specialtyController.createSpecialty);
