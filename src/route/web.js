@@ -21,8 +21,14 @@ let initWebRoutes = (app) => {
     router.delete('/api/delete-user-in-react', userController.handleDeleteUserInReact);
     //lấy allcode
     router.get('/api/getallcodesdata', userController.getAllCodesData);
-    router.get('/api/check-medical', medicalFacilityController.check);//check
-    
+    //lấy tất cả dữ liệu liên quan đến người đang sử dụng hệ thống bằng gamil của họ
+    router.get('/api/get-all-relative-infors-of-current-system-user', userController.getAllRelativeInforsOfCurrentSystemUser);
+    //lấy tất cả lịch của người dùng hiện tại
+    router.get('/api/get-all-relative-bookings-of-current-system-user', userController.getAllRelativeBookingsOfCurrentSystemUser)    
+    //tạo thông tin cho một cơ sở y tế
+    router.post('/api/create-medical-facility', medicalFacilityController.createMedicalFacility);
+    //lấy thông tin trích dẫn của cơ sở y tế
+    router.get('/api/get-info-of-medical-facility', medicalFacilityController.getInfoOfMedicalFacility);   
 
     //lấy ra các bác sĩ nộtr bật cho trang home
     router.get('/api/get-elite-doctor-for-homepage',doctorController.getEliteDoctorForHomePage);
