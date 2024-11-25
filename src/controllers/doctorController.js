@@ -66,11 +66,23 @@ let getExtraInforDoctorByID = async (req, res) => {
         })
     }
 }
-
+let createTimeframesForDoctorSchedule = async (req, res) => {
+    try {
+        let response = await doctorService.bulkCreateTimeframesForDoctorService(req.body);
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: "Create timeframes for Doctor schedule fail from server!",
+        })
+    }
+}
 module.exports = {
     getEliteDoctorForHomePage: getEliteDoctorForHomepage,
     getAllDoctorsForDoctorArticlePage : getAllDoctorsForDoctorArticlePage,
     saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor,
     getParticularInforForDoctorPage : getParticularInforForDoctorPage,
-    getExtraInforDoctorByID : getExtraInforDoctorByID
+    getExtraInforDoctorByID : getExtraInforDoctorByID,
+    createTimeframesForDoctorSchedule: createTimeframesForDoctorSchedule
 }
