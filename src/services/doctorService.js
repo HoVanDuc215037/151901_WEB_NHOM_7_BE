@@ -339,11 +339,55 @@ let bulkCreateTimeframesForDoctorService = (inputData) => {
         }
     })
 }
+
+let getScheduleByDateService = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameter: doctorId or date!',
+                })
+            } else {
+                console.log("Check formatted date: ", date, "type of date: ", typeof date);
+                let numberDate = Number(date);
+                console.log("Check formatted date (number): ", numberDate, "type of date: ", typeof numberDate);
+
+                let scheduleData = await db.Schedule.findAll({
+                    where: {
+                        doctorId: doctorId,
+                        date: numberDate,
+                    },
+                    include: [
+                        { model: db.Allcode, as: 'timeTypeData', attributes: ['value_Eng', 'value_Vie'] },
+                    ],
+                    raw: false,
+                    nest: true,
+                });
+
+                console.log("Check schedule data: ", scheduleData);
+                if (!scheduleData) {
+                    scheduleData = ["no schedule"];
+                }
+
+                resolve({
+                    errCode: 0,
+                    errMessage: "Get doctor schedule successfully!",
+                    data: scheduleData,
+                })
+            }
+        } catch (e) {
+
+        }
+    })
+}
+
 module.exports = {
     getEliteDoctorForHomePage : getEliteDoctorForHomePage, 
     getAllDoctorsForDoctorArticlePage: getAllDoctorsForDoctorArticlePage,
     saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor,
     getParticularInforForDoctorPage: getParticularInforForDoctorPage,
     getExtraInforDoctorByID : getExtraInforDoctorByID,
-    bulkCreateTimeframesForDoctorService : bulkCreateTimeframesForDoctorService
+    bulkCreateTimeframesForDoctorService : bulkCreateTimeframesForDoctorService,
+    getScheduleByDateService : getScheduleByDateService,
 }

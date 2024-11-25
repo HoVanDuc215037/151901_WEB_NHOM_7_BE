@@ -78,11 +78,28 @@ let createTimeframesForDoctorSchedule = async (req, res) => {
         })
     }
 }
+
+
+let getScheduleByDate = async (req, res) => {
+    try {
+        console.log("Check parameter: ", req.query.doctorId, req.query.date);
+        let response = await doctorService.getScheduleByDateService(req.query.doctorId, req.query.date);
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Get schedule by date for a doctor error from server!',
+        })
+    }
+}
+
 module.exports = {
     getEliteDoctorForHomePage: getEliteDoctorForHomepage,
     getAllDoctorsForDoctorArticlePage : getAllDoctorsForDoctorArticlePage,
     saveInforAndArticleOfADoctor : saveInforAndArticleOfADoctor,
     getParticularInforForDoctorPage : getParticularInforForDoctorPage,
     getExtraInforDoctorByID : getExtraInforDoctorByID,
-    createTimeframesForDoctorSchedule: createTimeframesForDoctorSchedule
+    createTimeframesForDoctorSchedule: createTimeframesForDoctorSchedule,
+    getScheduleByDate : getScheduleByDate,
 }
