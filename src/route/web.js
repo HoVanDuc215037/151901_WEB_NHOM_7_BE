@@ -3,6 +3,7 @@ import userController from "../controllers/userController";
 import doctorController from "../controllers/doctorController";
 import medicalFacilityController from '../controllers/medicalFacilityController';
 import specialtyController from '../controllers/specialtyController'
+import patientController from "../controllers/patientController";
 
 let router = express.Router();
 
@@ -29,6 +30,10 @@ let initWebRoutes = (app) => {
     router.post('/api/create-medical-facility', medicalFacilityController.createMedicalFacility);
     //lấy thông tin trích dẫn của cơ sở y tế
     router.get('/api/get-info-of-medical-facility', medicalFacilityController.getInfoOfMedicalFacility);   
+    //lưu bệnh nhân và thông tin đặt lịch khám với bác sĩ
+    router.post('/api/patient-infor-when-booking-time', patientController.patientInforWhenBookingTime);
+    //trang web xác nhận chốt đặt lịch
+    router.post('/api/confirm-booking-appointment', patientController.confirmBookingAppointment);    
 
     //lấy ra các bác sĩ nộtr bật cho trang home
     router.get('/api/get-elite-doctor-for-homepage',doctorController.getEliteDoctorForHomePage);
