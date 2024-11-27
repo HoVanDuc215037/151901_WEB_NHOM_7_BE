@@ -28,7 +28,35 @@ let getSpecialtyForHomePage = async (req,res) => {
     }
 }
 
+let getSpecialtyAndProvinceForMedicalFacilityManagePage = async (req,res) => {
+    try {
+        let response = await specialtyService.getSpecialtyAndProvinceForMedicalFacilityManagePageService();
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode : -1,
+            errMessage : 'Get specialty detail error from server!'
+        })
+    }
+}
+
+let getSpecialtyById = async (req,res) => {
+    try {
+        let response = await specialtyService.getSpecialtyByIdService(req.query.id,req.query.location);
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode : -1,
+            errMessage : 'Get specialty error from server!'
+        })
+    }
+}
+
 module.exports = {
     createSpecialty : createSpecialty,
-    getSpecialtyForHomePage : getSpecialtyForHomePage   
+    getSpecialtyForHomePage : getSpecialtyForHomePage,
+    getSpecialtyAndProvinceForMedicalFacilityManagePage : getSpecialtyAndProvinceForMedicalFacilityManagePage,
+    getSpecialtyById : getSpecialtyById,
 }
