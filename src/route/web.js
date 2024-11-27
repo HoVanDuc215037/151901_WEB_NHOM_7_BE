@@ -54,7 +54,11 @@ let initWebRoutes = (app) => {
     router.post('/api/create-new-specialty', specialtyController.createSpecialty);
     //lấy các chuyên khoa cho trang home
     router.get('/api/get-specialty-for-homepage', specialtyController.getSpecialtyForHomePage);
-
+    //lấy một số trường của các specialties cho trang tạo cơ sở y tế (để đỡ nghẽn mạng)
+    router.get('/api/get-specialty-and-province-for-medical-facility-manage-page', specialtyController.getSpecialtyAndProvinceForMedicalFacilityManagePage);
+    //lấy dữ liệu cho trang specialty details, bao gồm thông tin của specialty và bác sĩ
+    router.get('/api/get-specialty-by-id', specialtyController.getSpecialtyById);
+    
     return app.use("/", router);
 }
 module.exports = initWebRoutes;
