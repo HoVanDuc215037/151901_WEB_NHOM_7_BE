@@ -382,6 +382,120 @@ let getScheduleByDateService = (doctorId, date) => {
     })
 }
 
+let saveAppointmentHistoryService = (inputData) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Kiểm tra các tham số bắt buộc
+            console.log("Check data: ", inputData);
+            if (!inputData.appointmentId || !inputData.patientEmail || !inputData.doctorEmail ||
+                !inputData.description || !inputData.files || !inputData.appointmentDate ||
+                !inputData.appointmentTimeFrame) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters!',
+                })
+            } else {
+                let existingHistory = await db.History.findOne({
+                    where: {
+                        patientEmail: inputData.patientEmail,
+                        doctorEmail: inputData.doctorEmail,
+                    },
+                    order: [['createdAt', 'DESC']],
+                })
+
+                if (existingHistory) {
+                    let currentTime = new Date();
+                    let createdTime = new Date(existingHistory.createdAt);
+                    // nếu history mới và cũ cách nhau chưa đầy 1 giờ thì thôi abacut
+                    let timeDifference = (currentTime - createdTime) / (1000 * 60);
+
+                    if (timeDifference < 60) {
+                        resolve({
+                            errCode: 2,
+                            errMessage: 'Cannot save history, another record exists within the last hour.',
+                        });
+                        return;
+                    }
+                }
+
+                //chuyển đổi kiểu dữ liệu
+                let fileBuffer = Buffer.from(inputData.files, 'base64');
+                let formattedDate = moment(inputData.appointmentDate, 'DD-MM-YYYY').format('YYYY-MM-DD 00:00:00');
+                let formettedTimeFrame = await db.Allcode.findOne({
+                    where: {
+                        type: 'TIME',
+                        value_Vie: inputData.appointmentTimeFrame,
+                    },
+                    attributes: ['keyMap'],
+                })
+                //lưu dữ liệu history
+                await db.History.create({
+                    appointmentId: inputData.appointmentId,
+                    patientEmail: inputData.patientEmail,
+                    doctorEmail: inputData.doctorEmail,
+                    appointmentDate: formattedDate,
+                    appointmentTimeFrame: formettedTimeFrame.keyMap,
+                    description: inputData.description,
+                    files: fileBuffer,
+                })
+
+                let booking = await db.Booking.findOne({
+                    where: { id: inputData.appointmentId },
+                    raw: false,
+                })
+
+                if (booking) {
+                    booking.statusId = 'S3';
+                    await booking.save();
+                }
+
+                resolve({
+                    errCode: 0,
+                    errMessage: 'Save appointment history successfully!',
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let getAppointmentHistoriesByDoctorEmailService = (inputDoctorEmail) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputDoctorEmail) {
+                resolve({
+                    errCode: 1,
+                    errMessage: `Missing required parameters: doctor's email!`,
+                })
+            } else {
+
+                let data = await db.History.findAll({
+                    where: { doctorEmail: inputDoctorEmail },
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt', 'id']
+                    },
+                    include: [
+                        { model: db.Allcode, as: 'appointmentTimeFrameData', attributes: ['value_Eng', 'value_Vie'] },
+                    ],
+                    raw: false,
+                })
+                if (!data) {
+                    data = {};
+                }
+
+                resolve({
+                    data: data,
+                    errCode: 0,
+                    errMessage: 'Get appointment histories successfully!',
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     getEliteDoctorForHomePage : getEliteDoctorForHomePage, 
     getAllDoctorsForDoctorArticlePage: getAllDoctorsForDoctorArticlePage,
@@ -390,4 +504,6 @@ module.exports = {
     getExtraInforDoctorByID : getExtraInforDoctorByID,
     bulkCreateTimeframesForDoctorService : bulkCreateTimeframesForDoctorService,
     getScheduleByDateService : getScheduleByDateService,
+    saveAppointmentHistoryService: saveAppointmentHistoryService,
+    getAppointmentHistoriesByDoctorEmailService: getAppointmentHistoriesByDoctorEmailService,
 }
