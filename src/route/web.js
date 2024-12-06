@@ -5,6 +5,7 @@ import medicalFacilityController from '../controllers/medicalFacilityController'
 import specialtyController from '../controllers/specialtyController'
 import patientController from "../controllers/patientController";
 import ExamPackageScheduleController from "../controllers/ExamPackageScheduleController";
+import ExamPackageSpecialtyMedicalFacilityController from "../controllers/ExamPackageSpecialtyMedicalFacilityController";
 
 let router = express.Router();
 
@@ -14,7 +15,7 @@ let initWebRoutes = (app) => {
     //tạo người dùng
     router.post('/api/create-new-user-in-react', userController.handleCreateNewUserInReact);
     //kiểm tra email của người dùng
-    router.get('/api/check-user-email-already-exist', userController.checkEmailWetherAlreadyExist);    
+    router.get('/api/check-user-email-already-exist', userController.checkEmailWetherAlreadyExist);
     //lấy thông tin của tất cả người dùng
     router.get('/api/get-all-users-for-react', userController.handleGetAllUsersForReact);
     //cập nhật thông tin một người dùng
@@ -26,18 +27,22 @@ let initWebRoutes = (app) => {
     //lấy tất cả dữ liệu liên quan đến người đang sử dụng hệ thống bằng gamil của họ
     router.get('/api/get-all-relative-infors-of-current-system-user', userController.getAllRelativeInforsOfCurrentSystemUser);
     //lấy tất cả lịch của người dùng hiện tại
-    router.get('/api/get-all-relative-bookings-of-current-system-user', userController.getAllRelativeBookingsOfCurrentSystemUser)    
+    router.get('/api/get-all-relative-bookings-of-current-system-user', userController.getAllRelativeBookingsOfCurrentSystemUser)
     //tạo thông tin cho một cơ sở y tế
     router.post('/api/create-medical-facility', medicalFacilityController.createMedicalFacility);
     //lấy thông tin trích dẫn của cơ sở y tế
-    router.get('/api/get-info-of-medical-facility', medicalFacilityController.getInfoOfMedicalFacility);   
+    router.get('/api/get-info-of-medical-facility', medicalFacilityController.getInfoOfMedicalFacility);
     //lưu bệnh nhân và thông tin đặt lịch khám với bác sĩ
     router.post('/api/patient-infor-when-booking-time', patientController.patientInforWhenBookingTime);
     //trang web xác nhận chốt đặt lịch
-    router.post('/api/confirm-booking-appointment', patientController.confirmBookingAppointment);    
+    router.post('/api/confirm-booking-appointment', patientController.confirmBookingAppointment);
+    //tạo mới một gói khám cho một cơ sở y tế
+    router.post('/api/create-exam-package', ExamPackageSpecialtyMedicalFacilityController.createExamPackage);
+    //lấy thông tin tất cả các Gói khám
+    router.get('/api/get-all-exam-package', ExamPackageSpecialtyMedicalFacilityController.getAllExamPackage);
 
     //lấy ra các bác sĩ nộtr bật cho trang home
-    router.get('/api/get-elite-doctor-for-homepage',doctorController.getEliteDoctorForHomePage);
+    router.get('/api/get-elite-doctor-for-homepage', doctorController.getEliteDoctorForHomePage);
     //lấy ra tất cả bác sĩ để cho vào Select trong trang doctorArticle
     router.get('/api/get-all-doctors-for-doctor-article-page', doctorController.getAllDoctorsForDoctorArticlePage);
     //lưu bài báo của một bác sĩ
@@ -64,10 +69,10 @@ let initWebRoutes = (app) => {
     //lấy dữ liệu cho trang specialty details, bao gồm thông tin của specialty và bác sĩ
     router.get('/api/get-specialty-by-id', specialtyController.getSpecialtyById);
 
-     //tạo lịch khám cho gói khám
-     router.post('/api/bulk-create-timeframes-for-exam-package-schedule', ExamPackageScheduleController.createTimeframesForExamPackageSchedule);
-     //lấy các khung giờ khám của một gói khám
-     router.get('/api/get-package-schedule-by-date', ExamPackageScheduleController.getPackageScheduleByDate);
+    //tạo lịch khám cho gói khám
+    router.post('/api/bulk-create-timeframes-for-exam-package-schedule', ExamPackageScheduleController.createTimeframesForExamPackageSchedule);
+    //lấy các khung giờ khám của một gói khám
+    router.get('/api/get-package-schedule-by-date', ExamPackageScheduleController.getPackageScheduleByDate);
 
     return app.use("/", router);
 }
