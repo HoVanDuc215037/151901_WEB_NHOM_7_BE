@@ -4,6 +4,7 @@ import doctorController from "../controllers/doctorController";
 import medicalFacilityController from '../controllers/medicalFacilityController';
 import specialtyController from '../controllers/specialtyController'
 import patientController from "../controllers/patientController";
+import ExamPackageScheduleController from "../controllers/ExamPackageScheduleController";
 
 let router = express.Router();
 
@@ -62,7 +63,12 @@ let initWebRoutes = (app) => {
     router.get('/api/get-specialty-and-province-for-medical-facility-manage-page', specialtyController.getSpecialtyAndProvinceForMedicalFacilityManagePage);
     //lấy dữ liệu cho trang specialty details, bao gồm thông tin của specialty và bác sĩ
     router.get('/api/get-specialty-by-id', specialtyController.getSpecialtyById);
-    
+
+     //tạo lịch khám cho gói khám
+     router.post('/api/bulk-create-timeframes-for-exam-package-schedule', ExamPackageScheduleController.createTimeframesForExamPackageSchedule);
+     //lấy các khung giờ khám của một gói khám
+     router.get('/api/get-package-schedule-by-date', ExamPackageScheduleController.getPackageScheduleByDate);
+
     return app.use("/", router);
 }
 module.exports = initWebRoutes;
