@@ -12,14 +12,14 @@ require('dotenv').config();
 // });
 
 // Option 3: Passing parameters separately (other dialects)
+const dbUrl = process.env.CLEVER_MYSQL_URL;
+
 const sequelize = new Sequelize(
-    process.env.DB_DATABASE_NAME,
-    process.env.DB_USERNAME,
-    null,
+    dbUrl,
     {
-        host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
-        logging: false,
+        //host: process.env.DB_HOST,
+        //dialect: process.env.DB_DIALECT,
+        //logging: false,
         query: {
             "raw": false,
         },
