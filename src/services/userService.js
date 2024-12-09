@@ -77,11 +77,7 @@ let checkUserEmail = (userEmail) => {
 let createNewUserInReact = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let check = await db.User.findOne({
-                where: {
-                    email: data.email
-                }
-            });
+            let check = await checkUserEmail(data.email);
             if (check) {
                 resolve({
                     errCode: 1,
