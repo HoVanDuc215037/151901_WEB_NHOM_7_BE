@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
+            ComplexMedicalFacility.hasMany(models.MedicalFacilitySpecialtyArea, { foreignKey: 'medicalFacilityId', as: 'medicalFacilitySpecialtyData' })
             ComplexMedicalFacility.hasMany(models.Doctor_specialty_medicalFacility, { foreignKey: 'medicalFacilityId', as: 'medicalFacilityDoctorAndSpecialty' })
+            ComplexMedicalFacility.belongsTo(models.Allcode, { foreignKey: 'provinceId', targetKey: 'keyMap', as: 'provinceTypeDataForFacility' })
+            ComplexMedicalFacility.hasMany(models.ExamPackage_specialty_medicalFacility, { foreignKey: 'medicalFacilityId', as: 'medicalFacilityPackage' })
         }
     }
     ComplexMedicalFacility.init({
